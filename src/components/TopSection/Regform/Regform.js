@@ -128,7 +128,8 @@ export default class Regform extends Component {
             else if (phone_number.length > 3) {
                 paramsToValidate = {
                     phone_number: phone_number,
-                    phone_country_prefix: this.state.phone_country_prefix
+                    phone_country_prefix: this.state.phone_country_prefix,
+                    funnel_name: window.location.origin,
                 };
 
                 let submitResponse = this.props.validateParams(paramsToValidate);
@@ -215,15 +216,23 @@ export default class Regform extends Component {
 
             this.setState({ errorIndexes });
         }
-        this.setState({[name]: value, errors});
+        this.setState({
+            [name]: value.replace(/^\s+|\s/g, ''), errors,
+        })
 
     };
 
 
     render() {
+        const {
+            first_name,
+            last_name,
+            email,
+            password,
+            confirm_password,
+        } = this.state;
 
         let languageManager = this.props.languageManager();
-
         if (this.props.step <= 3) {
             return (
                 <div className={"Regform " + (this.props.class ? this.props.class : '')} ref={this.setTextInputRef}>
@@ -242,12 +251,12 @@ export default class Regform extends Component {
                     </div>
                     <div className='inner'>
                         <div className='form-wrapper one'>
-                            {/*{this.state.errors && <div className="errors">
+                            {this.state.errors && <div className="errors">
                                 {this.state.errors[0]}
-                            </div>}*/}
-                            <input className="inputfield fname" type="text" name="first_name" placeholder={languageManager.fname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
-                            <input className="inputfield lname" type="text" name="last_name" placeholder={languageManager.lname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
-                            <input className="inputfield email" type="text" name="email" placeholder={languageManager.email} autoComplete='off' onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
+                            </div>}
+                            <input className="inputfield fname" type="text" name="first_name" value={first_name} placeholder={languageManager.fname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
+                            <input className="inputfield lname" type="text" name="last_name" value={last_name} placeholder={languageManager.lname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
+                            <input className="inputfield email" type="text" name="email" value={email} placeholder={languageManager.email} autoComplete='off' onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
                             <button onClick={this.handleForward} className='start'>{languageManager.button}</button>
                         </div>
                         <div className='form-wrapper two'>
@@ -255,7 +264,7 @@ export default class Regform extends Component {
                                 {this.state.errors[0]}
                             </div>}*/}
                             <div className="forw-wrapper_input">
-                                <input className="inputfield pass" type={this.state.firstPassType} maxLength="8" onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="password" placeholder={languageManager.pass}/>
+                                <input className="inputfield pass" type={this.state.firstPassType} value={password} maxLength="8" onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="password" placeholder={languageManager.pass}/>
                                 <span onClick={this.handleClick} data-type="firstPassType" className={this.state.firstPassType === 'password' ? 'show-pass' : 'hide-pass'}></span>
                             </div>
                             <div className="help-block">
@@ -266,7 +275,7 @@ export default class Regform extends Component {
                                 </div>
                             </div>
                             <div className="forw-wrapper_input pass2">
-                                <input className="inputfield pass" type={this.state.secondPassType} maxLength="8" onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="confirm_password" placeholder={languageManager.pass2}/>
+                                <input className="inputfield pass" type={this.state.secondPassType} value={confirm_password} maxLength="8" onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="confirm_password" placeholder={languageManager.pass2}/>
                                 <span onClick={this.handleClick} data-type="secondPassType" className={this.state.secondPassType === 'password' ? 'show-pass' : 'hide-pass'}></span>
                             </div>
                             <ul className='req'>
@@ -288,6 +297,15 @@ export default class Regform extends Component {
                                 separateDialCode={true}
                                 onSelectFlag={this.handleSelectFlag}
                                 onPhoneNumberBlur={this.phoneNumberBlur}
+                                onPhoneNumberChange={(status, value, countryData, number, id) => {
+                                    if(value.length <=15) {
+                                        this.setState({
+                                            phone_country_prefix: `${countryData.dialCode}`,
+                                            dynamicNum: value.replace(/[^0-9]/g, '')
+                                        })
+                                    }
+                                }}
+                                value = {this.state.dynamicNum}
                             />
                             <button onClick={this.handleForward} className='start' >{languageManager.button_last}</button>
                         </div>
