@@ -42,7 +42,7 @@ export default class MidSection extends Component {
                 <div className="section-3">
                     <div className="container">
                         <div className="row">
-                            <div className="col-sm-12">
+                            <div className="col-sm-12 pd-block">
                                 <h2>{languageManager.join_title[0]} <span>{languageManager.join_title[1]}</span></h2>
                                 <p>{languageManager.join_description[0]}</p>
                                 <p>{languageManager.join_description[1]}</p>

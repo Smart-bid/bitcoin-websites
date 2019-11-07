@@ -84,6 +84,14 @@
             &:hover {
                 background: linear-gradient(to bottom, #ff9b33 0%, #ffaf38 100%);
             }
+            @media (max-width: 600px) {
+                width: 100%;
+                font-size: 30px;
+            }
+            @media (max-width: 450px) {
+                width: 100%;
+                font-size: 20px;
+            }
         }
     }
 }

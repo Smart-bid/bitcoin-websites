@@ -4,7 +4,6 @@ import Header from './Header/Header'
 import VideoPlayer from './VideoPlayer/VideoPlayer.js'
 import Regform  from './Regform/Regform'
 
-import video from './en-1.mp4'
 
 
 export default class TopSection extends Component {
@@ -46,7 +45,7 @@ export default class TopSection extends Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-8 col-md-7 col-sm-12">
-                                <VideoPlayer link={video} />
+                                <VideoPlayer link={"https://player.vimeo.com/video/359534572?title=0&amp;byline=0&amp;portrait=0&amp;transparent=0&amp;autoplay=1&amp;sidedock=0&amp;controls=0"} />
                             </div>
                             <div className="col-lg-4 col-md-5 col-sm-12">
                                 <div className="regform" ref={this.regPanel}>

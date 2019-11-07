@@ -95,13 +95,12 @@ export default class Regform extends Component {
                 }
             } else {
                 this.setState({
-                    errors: ['Passwords do not match']
+                    errors: ['Les mots de passe ne correspondent pas']
                 })
                 return this.state.errors
             }
 
             let submitResponse = this.props.validateParams(paramsToValidate);
-            console.log(this.props)
 
             if (submitResponse.success) {
                 this.props.handleForward(paramsToValidate);
@@ -121,7 +120,7 @@ export default class Regform extends Component {
 
             if (!this.phoneValidate(phone_number)) {
                 this.setState({
-                    errors: ['Enter only number']
+                    errors: ['System could not register you. Please provide your real phone number.']
                 });
                 return this.state.errors
             }
@@ -144,7 +143,7 @@ export default class Regform extends Component {
                 }
             }else {
                 this.setState({
-                    errors: ['Enter phone number']
+                    errors: ['System could not register you. Please provide your real phone number.']
                 });
                 return this.state.errors
             }
