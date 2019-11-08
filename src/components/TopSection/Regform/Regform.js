@@ -120,7 +120,7 @@ export default class Regform extends Component {
 
             if (!this.phoneValidate(phone_number)) {
                 this.setState({
-                    errors: ['System could not register you. Please provide your real phone number.']
+                    errors: ['Le système n’a pas pu vous enregistrer. Veuillez indiquer votre numéro de téléphone réel.']
                 });
                 return this.state.errors
             }
@@ -143,7 +143,7 @@ export default class Regform extends Component {
                 }
             }else {
                 this.setState({
-                    errors: ['System could not register you. Please provide your real phone number.']
+                    errors: ['Le système n’a pas pu vous enregistrer. Veuillez indiquer votre numéro de téléphone réel.']
                 });
                 return this.state.errors
             }
