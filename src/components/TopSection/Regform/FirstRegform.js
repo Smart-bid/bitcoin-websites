@@ -104,6 +104,13 @@ class FirstRegform extends Component {
         }
     };
 
+    componentDidMount() {
+        this.setState({
+            email: this.context.email,
+            first_name: this.context.firstName
+        })
+    }
+
     render() {
 
         let languageManager = this.props.languageManager();

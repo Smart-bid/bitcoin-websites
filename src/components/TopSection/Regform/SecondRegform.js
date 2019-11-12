@@ -4,7 +4,6 @@ import 'react-intl-tel-input/dist/main.css'
 import logo from '../../BottomSection/logo.png'
 import hint from './6b.png'
 import {UserContext} from '../../../helpers/dataContext';
-import {Link} from 'react-router-dom'
 
 
 export default class SecondRegform extends Component {
@@ -43,26 +42,6 @@ export default class SecondRegform extends Component {
         return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     };
 
-    /*sendFirstData = () => {
-       let parametrsToValidate = {
-            email: this.context.email,
-            first_name: this.context.firstName,
-            last_name: this.context.lastName
-        };
-
-        let submitResponse = this.props.validateParams(parametrsToValidate);
-
-        if (submitResponse.success) {
-            this.props.handleForward(parametrsToValidate);
-            this.props.handleStep(this.props.step + 1);
-        }
-        else{
-            this.setState({
-                errors: submitResponse.errors
-            })
-        }
-    };*/
-
     componentDidMount() {
         this.setState({
             email: this.context.email,
@@ -72,7 +51,6 @@ export default class SecondRegform extends Component {
 
     sendAllData = (e) => {
         e.preventDefault();
-        /*this.sendFirstData();*/
 
         if (this.state.phone_number.length > 5) {
 
@@ -88,12 +66,13 @@ export default class SecondRegform extends Component {
             };
 
             console.log(paramsToValidate);
-
-            //this.setState({ paramsToValidate }, () => {this.props.handleSubmit(this.state.paramsToValidate)})
             let submitResponse = this.props.validateParams(paramsToValidate);
             if (submitResponse.success) {
                 this.props.handleForward(paramsToValidate);
-                this.setState({ paramsToValidate }, () => {this.props.handleSubmit(this.state.paramsToValidate)})
+                this.setState({ paramsToValidate }, () => {
+                    this.props.handleForward(paramsToValidate);
+                    this.props.handleSubmit(this.state.paramsToValidate);
+                })
             }
             else{
                 this.setState({
