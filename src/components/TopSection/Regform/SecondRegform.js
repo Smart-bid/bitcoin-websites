@@ -19,8 +19,7 @@ export default class SecondRegform extends Component {
             phone_country_prefix: "",
             phone_number: "",
             agree_1: true,
-            agree_2: true,
-            errorIndexes: [0,1,2,3]
+            agree_2: true
         }
 
     }
@@ -64,32 +63,43 @@ export default class SecondRegform extends Component {
         }
     };*/
 
+    componentDidMount() {
+        this.setState({
+            email: this.context.email,
+            first_name: this.context.firstName
+        })
+    }
+
     sendAllData = (e) => {
         e.preventDefault();
         /*this.sendFirstData();*/
 
         if (this.state.phone_number.length > 5) {
+
             let paramsToValidate = {
-                email: this.context.email,
-                first_name: this.context.firstName,
-                last_name: this.context.lastName,
-                password: this.context.password,
+                email: this.state.email,
+                first_name: this.state.first_name,
+                last_name: this.state.last_name,
+                password: this.state.password,
                 agree_2: this.state.agree_2,
                 phone_number: this.state.phone_number,
                 phone_country_prefix: this.context.countryPrefix,
                 funnel_name: window.location.origin
             };
 
-            this.setState({ paramsToValidate }, () => {this.props.handleSubmit(this.state.paramsToValidate)})
-            /*let submitResponse = this.props.validateParams(paramsToValidate);
+            console.log(paramsToValidate);
+
+            //this.setState({ paramsToValidate }, () => {this.props.handleSubmit(this.state.paramsToValidate)})
+            let submitResponse = this.props.validateParams(paramsToValidate);
             if (submitResponse.success) {
+                this.props.handleForward(paramsToValidate);
                 this.setState({ paramsToValidate }, () => {this.props.handleSubmit(this.state.paramsToValidate)})
             }
             else{
                 this.setState({
                     errors: submitResponse.errors
                 })
-            }*/
+            }
         }
     };
 
@@ -186,7 +196,7 @@ export default class SecondRegform extends Component {
                             }}
                             value={this.context.phoneNumber}
                         />
-                        <Link to="/"><button onClick={(e) => {this.sendAllData(e)}} className='start' >{languageManager.button_last}</button></Link>
+                        <button onClick={(e) => {this.sendAllData(e)}} className='start' >{languageManager.button_last}</button>
                     </div>
                 </div>
             </div>

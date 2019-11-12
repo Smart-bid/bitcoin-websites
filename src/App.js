@@ -32,7 +32,7 @@ class App extends ReactQueryParams {
 
     handleSubmit = (params) => {
         this.props.onSubmit(params)
-        /*.then(() =>  this.props.history.push('/'))*/
+        .then(() =>  this.props.history.push('/'))
     };
 
     getValueFromInputs = e => {
