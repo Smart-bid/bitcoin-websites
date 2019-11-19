@@ -40,12 +40,12 @@
     "pass2": "Confirmez le mot de passe",
     "button": "L'étape suivante",
     "button_last": "S'INSCRIRE MAINTENANT",
-    "passtest": [
-      "Le mot de passe doit comporter 8 caractères.",
-      "Doit contenir au moins 1 lettre.",
-      "Doit contenir au moins 1 chiffre.",
-      "Doit contenir au moins 1 lettre majuscule."
-    ],
+    "passtest": {
+      "invalidlength": "Le mot de passe doit comporter entre 8 caractères.",
+      "nolowercase": "Doit contenir au moins 1 lettre.",
+      "nonumber": "Doit contenir au moins 1 chiffre.",
+      "nouppercase": "Doit contenir au moins 1 lettre majuscule."
+    },
     "morebox": "Exemple: 12John34",
     "bcbid": [
       "bid",
@@ -226,12 +226,12 @@
     "pass2": "Confirmez le mot de passe",
     "button": "L'étape suivante",
     "button_last": "S'INSCRIRE MAINTENANT",
-    "passtest": [
-      "Le mot de passe doit comporter 8 caractères.",
-      "Doit contenir au moins 1 lettre.",
-      "Doit contenir au moins 1 chiffre.",
-      "Doit contenir au moins 1 lettre majuscule."
-    ],
+    "passtest": {
+      "invalidlength": "Le mot de passe doit comporter entre 8 caractères.",
+      "nolowercase": "Doit contenir au moins 1 lettre.",
+      "nonumber": "Doit contenir au moins 1 chiffre.",
+      "nouppercase": "Doit contenir au moins 1 lettre majuscule."
+    },
     "morebox": "Exemple: 12John34",
     "bcbid": [
       "bid",

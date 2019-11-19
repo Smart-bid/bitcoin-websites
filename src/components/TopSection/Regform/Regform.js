@@ -18,12 +18,20 @@ export default class Regform extends Component {
             password: "",
             confirm_password: "",
             phone_country_prefix: "",
+            country_name: "",
             tel: "",
             agree_1: true,
             agree_2: true,
             firstPassType: 'password',
             secondPassType: 'password',
-            errorIndexes: [0,1,2,3]
+            errors: '',
+            passwordErrors: {
+                invalidlength: true,
+                nolowercase: true,
+                nonumber: true,
+                nouppercase: true,
+                empty: true
+            }
         };
 
         this.setTextInputRef = element => {
@@ -55,7 +63,8 @@ export default class Regform extends Component {
 
     phoneNumberBlur = (status, value, countryData) => {
         this.setState({
-            phone_country_prefix: '+' + `${countryData.dialCode}`
+            phone_country_prefix: '+' + `${countryData.dialCode}`,
+            country_name: countryData.iso2
         })
     }
 
@@ -73,22 +82,22 @@ export default class Regform extends Component {
                 email: this.state.email,
                 first_name: this.state.first_name,
                 last_name: this.state.last_name,
-                agree_2: this.state.agree_2
+                agree_2: this.state.agree_2,
+                funnel_name: window.location.origin,
             };
-            let submitResponse = this.props.validateParams(paramsToValidate);
+            let checkParams = this.props.validateParams(paramsToValidate);
 
-            if (submitResponse.success) {
-                this.props.handleForward(paramsToValidate);
-                this.props.handleStep(this.props.step + 1);
-            }
-            else{
+            if (checkParams.success) {
+                this.props.setLeadData(paramsToValidate).then(this.props.handleLeadStep(), this.props.handleStep(this.props.step + 1));
+            } else {
+                const fieldWithMessages = Object.keys(checkParams.errors).find(field => checkParams.errors[field].hasOwnProperty('messages'));
+                const firstError = checkParams.errors[fieldWithMessages].messages[0];
                 this.setState({
-                    errors: submitResponse.errors
+                    errors: firstError
                 })
             }
         }
         else if (this.props.step === 2){
-
             if (this.state.confirm_password === this.state.password) {
                 paramsToValidate = {
                     password: this.state.password
@@ -100,17 +109,12 @@ export default class Regform extends Component {
                 return this.state.errors
             }
 
-            let submitResponse = this.props.validateParams(paramsToValidate);
+            let submitPassword = this.props.validateParams(paramsToValidate);
 
-            if (submitResponse.success) {
-                this.props.handleForward(paramsToValidate);
-                this.props.handleStep(this.props.step + 1);
-            }
-            else{
-
+            if (submitPassword.success) {
+                this.props.setLeadData(paramsToValidate).then(this.props.handleLeadStep(), this.props.handleStep(this.props.step + 1));
             }
         }
-
         // Step 3
         else if (this.props.step === 3){
 
@@ -127,21 +131,21 @@ export default class Regform extends Component {
             else if (phone_number.length > 3) {
                 paramsToValidate = {
                     phone_number: phone_number,
-                    phone_country_prefix: this.state.phone_country_prefix,
-                    funnel_name: window.location.origin,
+                    phone_country_prefix: this.state.phone_country_prefix
                 };
-
-                let submitResponse = this.props.validateParams(paramsToValidate);
-                if (submitResponse.success) {
-                    this.props.handleSubmit(paramsToValidate);
-                    this.props.handleStep(this.props.step + 1);
+                let submitPhone = this.props.validateParams(paramsToValidate);
+                if (submitPhone.success) {
+                    this.props.setLeadData(paramsToValidate).then(this.props.handleSubmit(), this.props.handleStep(this.props.step + 1));
+                    this.setState({
+                        errors: []
+                    });
                 }
                 else{
                     this.setState({
-                        errors: submitResponse.errors
+                        errors: submitPhone.errors
                     })
                 }
-            }else {
+            } else {
                 this.setState({
                     errors: ['Le système n’a pas pu vous enregistrer. Veuillez indiquer votre numéro de téléphone réel.']
                 });
@@ -193,32 +197,17 @@ export default class Regform extends Component {
     handleStepChange = (name, value) => {
         let errors = null;
         if (name === 'password') {
-            const submitResponse = this.props.validateParams({
+            const checkPassword = this.props.validateParams({
                 password: value
             });
 
-            let submitErrs = [];
-            let staticErrors = [
-                "The password must be 8 characters long",
-                "Must contain at least 1 small letter",
-                "Must contain at least 1 number",
-                "Must contain at least 1 capital letter",
-            ];
-
-            submitErrs.push(submitResponse.errors);
-
-            const errorIndexes = submitErrs[0].reduce((errorsIndexesArray, error) => {
-                const errorIndex = staticErrors.indexOf(error);
-                errorsIndexesArray.push(errorIndex);
-                return errorsIndexesArray;
-            }, []);
-
-            this.setState({ errorIndexes });
+            if (checkPassword.errors) {
+                this.setState({
+                    passwordErrors:  checkPassword.errors.password
+                })
+            }
         }
-        this.setState({
-            [name]: value.replace(/^\s+|\s/g, ''), errors,
-        })
-
+        this.setState({[name]: value.replace(/^\s+|\s/g, ''), errors});
     };
 
 
@@ -251,7 +240,7 @@ export default class Regform extends Component {
                     <div className='inner'>
                         <div className='form-wrapper one'>
                             {this.state.errors && <div className="errors">
-                                {this.state.errors[0]}
+                                {this.state.errors}
                             </div>}
                             <input className="inputfield fname" type="text" name="first_name" value={first_name} placeholder={languageManager.fname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
                             <input className="inputfield lname" type="text" name="last_name" value={last_name} placeholder={languageManager.lname} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)}/>
@@ -263,7 +252,7 @@ export default class Regform extends Component {
                                 {this.state.errors[0]}
                             </div>}*/}
                             <div className="forw-wrapper_input">
-                                <input className="inputfield pass" type={this.state.firstPassType} value={password} maxLength="8" onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="password" placeholder={languageManager.pass}/>
+                                <input className="inputfield pass" type={this.state.firstPassType} maxLength="8" value={password} onChange={(e) => this.handleStepChange(e.target.name, e.target.value)} name="password" placeholder={languageManager.pass}/>
                                 <span onClick={this.handleClick} data-type="firstPassType" className={this.state.firstPassType === 'password' ? 'show-pass' : 'hide-pass'}></span>
                             </div>
                             <div className="help-block">
@@ -278,33 +267,36 @@ export default class Regform extends Component {
                                 <span onClick={this.handleClick} data-type="secondPassType" className={this.state.secondPassType === 'password' ? 'show-pass' : 'hide-pass'}></span>
                             </div>
                             <ul className='req'>
-                                {languageManager.passtest.map((li, index) => {
-                                    return (<li key={index} className={this.state.errorIndexes.includes(index) ? 'list' : 'ok'}>{li}</li>)
+                                {Object.keys(languageManager.passtest).map((validationRule, index) => {
+                                    return (<li key={index} className={this.state.passwordErrors[validationRule] ? 'list' : 'ok'}>
+                                        {languageManager.passtest[validationRule]}
+                                    </li>)
                                 })}
                             </ul>
                             <button onClick={this.handleForward} className='start'>{languageManager.button}</button>
                         </div>
                         <div className='form-wrapper three'>
-                            {/*{this.state.errors && <div className="errors">
+                            {this.state.errors && <div className="errors">
                                 {this.state.errors[0]}
-                            </div>}*/}
+                            </div>}
                             <IntlTelInput
                                 preferredCountries={[this.props.countryCode]}
                                 containerClassName="intl-tel-input"
                                 inputClassName="inputfield tel"
+                                defaultCountry={this.state.country_name}
                                 autoPlaceholder={true}
                                 separateDialCode={true}
                                 onSelectFlag={this.handleSelectFlag}
                                 onPhoneNumberBlur={this.phoneNumberBlur}
                                 onPhoneNumberChange={(status, value, countryData, number, id) => {
-                                    if(value.length <=15) {
+                                    if(value.length <= 15) {
                                         this.setState({
                                             phone_country_prefix: `${countryData.dialCode}`,
-                                            dynamicNum: value.replace(/[^0-9]/g, '')
+                                            tel: value.replace(/[^0-9]/g, '')
                                         })
                                     }
                                 }}
-                                value = {this.state.dynamicNum}
+                                value = {this.state.tel}
                             />
                             <button onClick={this.handleForward} className='start' >{languageManager.button_last}</button>
                         </div>
