@@ -495,6 +495,12 @@
         margin-bottom: 4vw;
         color: #ffffff;
     }
+    .intl-tel-input .country-list {
+        background-color: #201e1f;
+    }
+    .intl-tel-input .country-list .country.highlight {
+        background-color: rgba(255,255,255,.1);
+    }
 }
 
 .error {
